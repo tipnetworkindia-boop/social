@@ -920,18 +920,15 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
 
         }
 
-
-        final GestureDetector gestureDetector = new GestureDetector(holder.mItemImg.getContext(), new GestureDetector.SimpleOnGestureListener() {
+        // Double-tap like for image
+        final GestureDetector videoGestureDetector = new GestureDetector(holder.mVideoImg.getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-                ArrayList<MediaItem> images = new ArrayList<>();
-                images.add(new MediaItem("", "", p.getImgUrl(), "", 0));
-                Intent i = new Intent(context, MediaViewerActivity.class);
-                i.putExtra("position", 0);
-                i.putExtra("itemId", p.getId());
-                i.putExtra("count", p.getImagesCount());
-                i.putParcelableArrayListExtra("images", images);
-                context.startActivity(i);
+                if (p.getVideoUrl().length() != 0) {
+                    watchVideo(p.getVideoUrl());
+                } else {
+                    watchYoutubeVideo(p.getYouTubeVideoCode());
+                }
                 return true;
             }
             @Override
@@ -946,8 +943,8 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                 return true;
             }
         });
-        holder.mItemImg.setOnTouchListener((v, event) -> {
-            gestureDetector.onTouchEvent(event);
+        holder.mVideoImg.setOnTouchListener((v, event) -> {
+            videoGestureDetector.onTouchEvent(event);
             return true;
         });
 
@@ -988,7 +985,34 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                                 imageView.setImageResource(R.drawable.ic_video_preview);
                             }
                         });
-                
+
+                // Double-tap like for video thumbnail
+                final GestureDetector videoGestureDetector = new GestureDetector(holder.mVideoImg.getContext(), new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        if (p.getVideoUrl().length() != 0) {
+                            watchVideo(p.getVideoUrl());
+                        } else {
+                            watchYoutubeVideo(p.getYouTubeVideoCode());
+                        }
+                        return true;
+                    }
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
+                        if (App.getInstance().getId() != 0 && !p.isMyLike()) {
+                            p.setMyLike(true);
+                            p.setLikesCount(p.getLikesCount() + 1);
+                            notifyItemChanged(position);
+                            like(p, position, 0);
+                        }
+                        showHeartAnimation(holder.mHeartOverlay);
+                        return true;
+                    }
+                });
+                holder.mVideoImg.setOnTouchListener((v, event) -> {
+                    videoGestureDetector.onTouchEvent(event);
+                    return true;
+                });
 
             } else {
 
@@ -1030,7 +1054,51 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
             holder.mVideoImg.setVisibility(View.GONE);
         }
 
-        
+        final GestureDetector gestureDetector = new GestureDetector(holder.mItemImg.getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                ArrayList<MediaItem> images = new ArrayList<>();
+                images.add(new MediaItem("", "", p.getImgUrl(), "", 0));
+                Intent i = new Intent(context, MediaViewerActivity.class);
+                i.putExtra("position", 0);
+                i.putExtra("itemId", p.getId());
+                i.putExtra("count", p.getImagesCount());
+                i.putParcelableArrayListExtra("images", images);
+                context.startActivity(i);
+                return true;
+            }
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                if (App.getInstance().getId() != 0 && !p.isMyLike()) {
+                    p.setMyLike(true);
+                    p.setLikesCount(p.getLikesCount() + 1);
+                    notifyItemChanged(position);
+                    like(p, position, 0);
+                }
+                showHeartAnimation(holder.mHeartOverlay);
+                return true;
+            }
+        });
+        holder.mItemImg.setOnTouchListener((v, event) -> {
+            gestureDetector.onTouchEvent(event);
+            return true;
+        });
+
+        holder.mVideoImg.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (p.getVideoUrl().length() != 0) {
+
+                    watchVideo(p.getVideoUrl());
+
+                } else {
+
+                    watchYoutubeVideo(p.getYouTubeVideoCode());
+                }
+            }
+        });
 
 
         holder.mItemPlayVideo.setOnClickListener(new View.OnClickListener() {
