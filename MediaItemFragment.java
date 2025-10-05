@@ -634,55 +634,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
             mPlayerView.setControllerShowTimeoutMs(0);
             mPlayerView.setControllerHideOnTouch(false);
             mPlayerView.showController();
-
-            //
-
-            mPlayerView.setOnTouchListener(new OnSwipeTouchListener(mContext) {
-
-                public void onSwipeLeft() {
-
-                    //openProfile(item, true);
-                }
-
-                @Override
-                public void onLongClick() {
-
-                    if (isVisibleToUser) {
-
-                        //showVideoOption(item);
-                    }
-                }
-
-                @Override
-                public void onSingleClick() {
-
-                    if (!exoplayer.getPlayWhenReady()) {
-
-                        exoplayer.setPlayWhenReady(true);
-                        //mPlayerView.setAlpha(0);
-                        mPlayImage.setVisibility(View.GONE);
-
-                    } else {
-
-                        mPlayImage.setVisibility(View.VISIBLE);
-
-                        exoplayer.setPlayWhenReady(false);
-                        mPlayerView.setAlpha(1);
-                    }
-                }
-
-                @Override
-                public void onDoubleClick(MotionEvent e) {
-
-                    if (!exoplayer.getPlayWhenReady()) {
-
-                        exoplayer.setPlayWhenReady(true);
-                        mPlayImage.setVisibility(View.GONE);
-                    }
-
-                    //likeVideo(item);
-                }
-            });
+            
         }
     }
 
