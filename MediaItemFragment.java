@@ -7,6 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.widget.Toast;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -82,6 +85,8 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
 
     public static int hashTagHyperLinkDisabled = 0;
 
+    private GestureDetector gestureDetector;
+
     ImageLoader imageLoader = App.getInstance().getImageLoader();
 
     private LinearLayout mSideMenu, mImagesLayout, mDetailsLayout, mCommentLayout, mShareLayout, mItemActionsLayout, mBottomLayout;
@@ -103,6 +108,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
     private Item item;
 
     public ExoPlayer exoplayer;
+
 
     private Context mContext;
 
@@ -156,6 +162,39 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
                 mPlayImage.setVisibility(View.GONE);
 
                 exoplayer.setPlayWhenReady(true);
+            }
+        });
+
+        // After mPlayerView = rootView.findViewById(R.id.player_view);
+        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                if (App.getInstance().getId() == 0) {
+                    Toast.makeText(getContext(), "Login to like", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!item.isMyLike()) {
+                        item.setMyLike(true);
+                        item.setLikesCount(item.getLikesCount() + 1);
+                        makeLike(item.getId(), 0);
+                        updateView();
+                        Toast.makeText(getContext(), "Liked!", Toast.LENGTH_SHORT).show();
+                        // Optionally: showHeartAnimation();
+                    }
+                }
+                return true;
+            }
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (mPlayerView != null) mPlayerView.showController();
+                return true;
+            }
+        });
+
+        mPlayerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
             }
         });
 
