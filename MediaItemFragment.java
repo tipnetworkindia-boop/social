@@ -84,6 +84,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
     TagSelectingTextview mTagSelectingTextview;
 
     public static int hashTagHyperLinkDisabled = 0;
+    private ImageView mHeartOverlay;
 
     private GestureDetector gestureDetector;
 
@@ -148,6 +149,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
 
         //
 
+        mHeartOverlay = rootView.findViewById(R.id.heart_overlay);
         mPlayerView = rootView.findViewById(R.id.player_view);
 
         mPreviewImage = rootView.findViewById(R.id.preview_image);
@@ -179,8 +181,8 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
                         item.setLikesCount(item.getLikesCount() + 1);
                         makeLike(item.getId(), 0);
                         updateView();
-                        // TODO: showHeartAnimation(); // if you want
                     }
+                    showHeartAnimation(mHeartOverlay);
                 }
                 return true;
             }
@@ -634,7 +636,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
             mPlayerView.setControllerShowTimeoutMs(0);
             mPlayerView.setControllerHideOnTouch(false);
             mPlayerView.showController();
-            
+
         }
     }
 
@@ -817,6 +819,25 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
         super.onDetach();
     }
 
+    private void showHeartAnimation(final ImageView heartOverlay) {
+        if (heartOverlay == null) return;
+        heartOverlay.setVisibility(View.VISIBLE);
+        heartOverlay.setScaleX(0.1f);
+        heartOverlay.setScaleY(0.1f);
+        heartOverlay.setAlpha(0.9f);
+        heartOverlay.animate()
+                .scaleX(1.5f)
+                .scaleY(1.5f)
+                .alpha(1f)
+                .setDuration(200)
+                .withEndAction(() -> heartOverlay.animate()
+                        .alpha(0f)
+                        .setDuration(300)
+                        .withEndAction(() -> heartOverlay.setVisibility(View.GONE))
+                        .start())
+                .start();
+    }
+
     private void makeLike(final long itemId, final int reaction) {
 
         CustomRequest jsonReq = new CustomRequest(Request.Method.POST, METHOD_REACTIONS_MAKE, null,
@@ -881,4 +902,3 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
         App.getInstance().addToRequestQueue(jsonReq);
     }
 }
-
