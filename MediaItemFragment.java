@@ -86,6 +86,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
     public static int hashTagHyperLinkDisabled = 0;
     private ImageView mHeartOverlay;
 
+
     private GestureDetector gestureDetector;
 
     ImageLoader imageLoader = App.getInstance().getImageLoader();
@@ -151,9 +152,35 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
 
         mHeartOverlay = rootView.findViewById(R.id.heart_overlay);
         mPlayerView = rootView.findViewById(R.id.player_view);
-
         mPreviewImage = rootView.findViewById(R.id.preview_image);
         mPreviewImage.setVisibility(View.GONE);
+        GestureDetector gestureDetectorImage = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                if (App.getInstance().getId() == 0) {
+                    Toast.makeText(getContext(), "Login to like", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!item.isMyLike()) {
+                        item.setMyLike(true);
+                        item.setLikesCount(item.getLikesCount() + 1);
+                        makeLike(item.getId(), 0);
+                        updateView();
+                    }
+                    showHeartAnimation(mHeartOverlay); // Or mHeartOverlay if shared
+                }
+                return true;
+            }
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                // Optional: Open fullscreen, zoom, etc.
+                return true;
+            }
+        });
+        mPreviewImage.setOnTouchListener((v, event) -> {
+            gestureDetectorImage.onTouchEvent(event);
+            return true;
+        });
+
 
         mPlayImage = rootView.findViewById(R.id.play_image);
         mPlayImage.setVisibility(View.GONE);
@@ -168,6 +195,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
         });
 
         mPlayerView = rootView.findViewById(R.id.player_view);
+
 
 // GestureDetector for tap logic
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -207,6 +235,7 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
             gestureDetector.onTouchEvent(event);
             return true;
         });
+
 
 
         mProgressBar = rootView.findViewById(R.id.progress_bar);
