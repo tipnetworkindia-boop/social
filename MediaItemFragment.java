@@ -881,3 +881,4 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
         App.getInstance().addToRequestQueue(jsonReq);
     }
 }
+
