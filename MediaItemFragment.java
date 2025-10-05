@@ -165,7 +165,9 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
             }
         });
 
-        // After mPlayerView = rootView.findViewById(R.id.player_view);
+        mPlayerView = rootView.findViewById(R.id.player_view);
+
+// GestureDetector for tap logic
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
@@ -177,26 +179,33 @@ public class MediaItemFragment extends Fragment implements Constants, TagClick {
                         item.setLikesCount(item.getLikesCount() + 1);
                         makeLike(item.getId(), 0);
                         updateView();
-                        Toast.makeText(getContext(), "Liked!", Toast.LENGTH_SHORT).show();
-                        // Optionally: showHeartAnimation();
+                        // TODO: showHeartAnimation(); // if you want
                     }
                 }
                 return true;
             }
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (exoplayer != null) {
+                    if (exoplayer.getPlayWhenReady()) {
+                        exoplayer.setPlayWhenReady(false);
+                        mPlayImage.setVisibility(View.VISIBLE);
+                    } else {
+                        exoplayer.setPlayWhenReady(true);
+                        mPlayImage.setVisibility(View.GONE);
+                    }
+                }
                 if (mPlayerView != null) mPlayerView.showController();
                 return true;
             }
         });
 
-        mPlayerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                gestureDetector.onTouchEvent(event);
-                return true;
-            }
+// Set gesture detector as the ONLY touch listener
+        mPlayerView.setOnTouchListener((v, event) -> {
+            gestureDetector.onTouchEvent(event);
+            return true;
         });
+
 
         mProgressBar = rootView.findViewById(R.id.progress_bar);
         mImagesProgressBar = rootView.findViewById(R.id.images_progress_bar);
