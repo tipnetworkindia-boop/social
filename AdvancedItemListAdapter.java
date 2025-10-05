@@ -921,32 +921,6 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
         }
 
         // Double-tap like for image
-        final GestureDetector videoGestureDetector = new GestureDetector(holder.mVideoImg.getContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-                if (p.getVideoUrl().length() != 0) {
-                    watchVideo(p.getVideoUrl());
-                } else {
-                    watchYoutubeVideo(p.getYouTubeVideoCode());
-                }
-                return true;
-            }
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                if (App.getInstance().getId() != 0 && !p.isMyLike()) {
-                    p.setMyLike(true);
-                    p.setLikesCount(p.getLikesCount() + 1);
-                    notifyItemChanged(position);
-                    like(p, position, 0);
-                }
-                showHeartAnimation(holder.mHeartOverlay);
-                return true;
-            }
-        });
-        holder.mVideoImg.setOnTouchListener((v, event) -> {
-            videoGestureDetector.onTouchEvent(event);
-            return true;
-        });
 
         if (p.getImagesCount() != 0) {
 
@@ -1057,6 +1031,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
         final GestureDetector gestureDetector = new GestureDetector(holder.mItemImg.getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
+                // Open fullscreen image
                 ArrayList<MediaItem> images = new ArrayList<>();
                 images.add(new MediaItem("", "", p.getImgUrl(), "", 0));
                 Intent i = new Intent(context, MediaViewerActivity.class);
@@ -1069,6 +1044,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
             }
             @Override
             public boolean onDoubleTap(MotionEvent e) {
+                // Like and show heart
                 if (App.getInstance().getId() != 0 && !p.isMyLike()) {
                     p.setMyLike(true);
                     p.setLikesCount(p.getLikesCount() + 1);
@@ -1085,9 +1061,9 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
         });
 
         holder.mVideoImg.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
+                // play video
 
                 if (p.getVideoUrl().length() != 0) {
 
